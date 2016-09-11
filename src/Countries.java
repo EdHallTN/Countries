@@ -1,0 +1,60 @@
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+
+public class Countries {
+
+    public static void main(String[] args) throws Exception {
+        HashMap<String, ArrayList<Country>> countryMap = new HashMap<>();
+
+        File f = new File("src/countries.txt");
+        Scanner fileScanner = new Scanner(f);
+
+        while (fileScanner.hasNext()) {
+            String line = fileScanner.nextLine();
+            String[] columns = line.split("\\|");
+            Country country = new Country(columns[1], (columns[0]));
+            String firstLetter = String.valueOf(country.name.charAt(0));
+            if (!countryMap.containsKey(firstLetter)) {
+                countryMap.put(firstLetter, new ArrayList<>());
+            }
+
+            ArrayList<Country> arr = countryMap.get(firstLetter);
+            arr.add(country);
+        }
+
+        String firstLetter = getLetter();
+        ArrayList<Country> newList = countryMap.get(firstLetter);
+        System.out.println(newList.toString());
+
+        saveFile(firstLetter, countryMap);
+
+    }
+
+    public static String getLetter() {
+        Scanner newScanner = new Scanner(System.in);
+        System.out.println("Please enter the first letter of a country.");
+        String inputLetter = newScanner.nextLine().toLowerCase();
+
+        if (inputLetter.length() == 1 && inputLetter.matches("[a-zA-Z]")) {
+            return inputLetter;
+        } else {
+            System.out.println("Invalid entry.");
+            return getLetter();
+        }
+    }
+
+    public static void saveFile(String getLetter, HashMap<String, ArrayList<Country>> countryMap) throws IOException {
+
+        File f = new File(getLetter + " _countries.txt");
+        FileWriter fw = new FileWriter(f);
+        fw.write(countryMap.get(getLetter).toString());
+        fw.close();
+    }
+
+
+}
